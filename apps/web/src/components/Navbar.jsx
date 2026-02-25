@@ -1,20 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
-import { api } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Navbar() {
+  const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
-  
-  // Simple check if user is logged in (can be improved with context)
-  const isLoggedIn = document.cookie.includes("authToken") || localStorage.getItem("user");
 
   const handleLogout = async () => {
-    try {
-      await api.post("/api/auth/logout");
-      localStorage.removeItem("user");
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
+    await logout();
+    navigate("/login");
   };
 
   return (
@@ -27,12 +20,19 @@ export default function Navbar() {
             </Link>
           </div>
           <div className="flex items-center space-x-4">
-            {isLoggedIn ? (
+            {loading ? (
+              <span className="text-sm text-gray-400">Loading...</span>
+            ) : user ? (
               <>
-                <span className="text-gray-700">Welcome!</span>
+                <Link
+                  to="/profile"
+                  className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  {user.name}
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-200 hover:border-gray-300"
                 >
                   Logout
                 </button>

@@ -57,6 +57,7 @@ export default function Register() {
       setSuccess("Registration successful! Please check your email for the verification code.");
       setStep(2);
     } catch (err) {
+      console.log("Registration error:", err);
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);

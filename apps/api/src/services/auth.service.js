@@ -36,30 +36,22 @@ const validatePassword = (password) => {
 };
 
 export const registerStudent = async ({ name, email, password }) => {
-  console.log("Starting registration for:", email);
-  
   const existing = await User.findOne({ email: email.toLowerCase() });
-  if (existing) {
-    console.log("Email already registered:", email);
-    throw new Error("Email already registered");
-  }
+  if (existing) throw new Error("Email already registered");
 
   // public registration is only STUDENT
   validateEmailByRole(email, "STUDENT");
-  
+
   // validate password strength
   validatePassword(password);
 
-  console.log("Creating password hash...");
   const passwordHash = await bcrypt.hash(password, 10);
 
   // OTP generation + hash storage
   const code = generate6DigitCode();
-  console.log("Generated verification code:", code);
   const emailVerificationCodeHash = await bcrypt.hash(code, 10);
   const emailVerificationExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-  console.log("Creating user in database...");
   const user = await User.create({
     name,
     email,
@@ -70,16 +62,11 @@ export const registerStudent = async ({ name, email, password }) => {
     emailVerificationExpiresAt,
   });
 
-  console.log("User created successfully with ID:", user._id);
-
-  // Send verification email
+  // Send verification email — delete user if it fails so they can retry
   try {
-    console.log("Sending verification email...");
     await sendVerificationEmail(email, code);
-    console.log("Email sent successfully");
   } catch (emailError) {
-    console.error("Failed to send verification email:", emailError);
-    // If email fails, we should probably delete the user so they can try again
+    console.error("Failed to send verification email:", emailError.message);
     await User.findByIdAndDelete(user._id);
     throw new Error("Failed to send verification email. Please try again.");
   }
@@ -91,9 +78,7 @@ export const verifyEmail = async ({ email, code }) => {
   const user = await User.findOne({ email: email.toLowerCase() });
   if (!user) throw new Error("User not found");
 
-  if (user.isEmailVerified) {
-    return user; // already verified
-  }
+  if (user.isEmailVerified) return user; // already verified
 
   if (!user.emailVerificationCodeHash || !user.emailVerificationExpiresAt) {
     throw new Error("No verification code found. Please request a new one.");
@@ -128,11 +113,10 @@ export const resendVerificationCode = async ({ email }) => {
   user.emailVerificationExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
   await user.save();
 
-  // Send verification email
   try {
     await sendVerificationEmail(user.email, code);
   } catch (emailError) {
-    console.error("Failed to send verification email:", emailError);
+    console.error("Failed to send verification email:", emailError.message);
     throw new Error("Failed to send verification email");
   }
 
