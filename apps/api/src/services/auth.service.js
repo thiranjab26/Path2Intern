@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
+import { sendVerificationEmail } from "./email.service.js";
 
 // STUDENT: @my.sliit.lk
 // STAFF:   @sliit.lk
@@ -19,20 +20,46 @@ const generate6DigitCode = () => {
   return String(Math.floor(100000 + Math.random() * 900000));
 };
 
+const validatePassword = (password) => {
+  if (password.length < 8) {
+    throw new Error("Password must be at least 8 characters long");
+  }
+  if (!/[A-Z]/.test(password)) {
+    throw new Error("Password must contain at least one uppercase letter");
+  }
+  if (!/[a-z]/.test(password)) {
+    throw new Error("Password must contain at least one lowercase letter");
+  }
+  if (!/[0-9]/.test(password)) {
+    throw new Error("Password must contain at least one number");
+  }
+};
+
 export const registerStudent = async ({ name, email, password }) => {
+  console.log("Starting registration for:", email);
+  
   const existing = await User.findOne({ email: email.toLowerCase() });
-  if (existing) throw new Error("Email already registered");
+  if (existing) {
+    console.log("Email already registered:", email);
+    throw new Error("Email already registered");
+  }
 
   // public registration is only STUDENT
   validateEmailByRole(email, "STUDENT");
+  
+  // validate password strength
+  validatePassword(password);
 
+  console.log("Creating password hash...");
   const passwordHash = await bcrypt.hash(password, 10);
 
   // OTP generation + hash storage
   const code = generate6DigitCode();
+  console.log("Generated verification code:", code);
   const emailVerificationCodeHash = await bcrypt.hash(code, 10);
   const emailVerificationExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
+  console.log("Creating user in database...");
   const user = await User.create({
     name,
     email,
@@ -43,9 +70,21 @@ export const registerStudent = async ({ name, email, password }) => {
     emailVerificationExpiresAt,
   });
 
-  // return code so you can send via email (later)
-  // IMPORTANT: in production, do NOT return the code in API response.
-  return { user, code };
+  console.log("User created successfully with ID:", user._id);
+
+  // Send verification email
+  try {
+    console.log("Sending verification email...");
+    await sendVerificationEmail(email, code);
+    console.log("Email sent successfully");
+  } catch (emailError) {
+    console.error("Failed to send verification email:", emailError);
+    // If email fails, we should probably delete the user so they can try again
+    await User.findByIdAndDelete(user._id);
+    throw new Error("Failed to send verification email. Please try again.");
+  }
+
+  return { user };
 };
 
 export const verifyEmail = async ({ email, code }) => {
@@ -89,18 +128,26 @@ export const resendVerificationCode = async ({ email }) => {
   user.emailVerificationExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
   await user.save();
 
-  return { user, code };
+  // Send verification email
+  try {
+    await sendVerificationEmail(user.email, code);
+  } catch (emailError) {
+    console.error("Failed to send verification email:", emailError);
+    throw new Error("Failed to send verification email");
+  }
+
+  return { user };
 };
 
 export const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email: email.toLowerCase() });
-  if (!user) throw new Error("Invalid credentials");
+  if (!user) throw new Error("No account found with this email. Please register first.");
 
   const ok = await bcrypt.compare(password, user.passwordHash);
   if (!ok) throw new Error("Invalid credentials");
 
   if (!user.isEmailVerified) {
-    throw new Error("Email not verified");
+    throw new Error("Email not verified. Please check your email for the verification code.");
   }
 
   const token = jwt.sign(

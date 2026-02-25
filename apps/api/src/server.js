@@ -4,6 +4,11 @@ import { connectDB } from "./config/db.js";
 
 dotenv.config();
 
+console.log("Environment variables loaded:");
+console.log("PORT:", process.env.PORT);
+console.log("MAILTRAP_HOST:", process.env.MAILTRAP_HOST);
+console.log("MAILTRAP_PORT:", process.env.MAILTRAP_PORT);
+
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
