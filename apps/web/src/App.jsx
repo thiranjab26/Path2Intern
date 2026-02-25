@@ -1,24 +1,21 @@
-import { useEffect, useState } from "react";
-import { api } from "./services/api";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
-  const [message, setMessage] = useState("Connecting to backend...");
-
-  useEffect(() => {
-    api.get("/health")
-      .then((res) => {
-        setMessage(res.data.message);
-      })
-      .catch(() => {
-        setMessage("Backend not reachable");
-      });
-  }, []);
-
   return (
-    <div style={{ padding: "40px", fontFamily: "Arial" }}>
-      <h1>Path2Intern</h1>
-      <p>{message}</p>
-    </div>
+    <Router>
+      <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
