@@ -6,21 +6,30 @@ import {
   loginUser,
 } from "../services/auth.service.js";
 import { User } from "../models/user.model.js";
-import { ModuleScopedRole } from "../models/moduleScopedRole.model.js";
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "lax", // 'strict' blocks cross-origin localhost requests
+  sameSite: "lax",
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
+/**
+ * Derive moduleScopedRoles array from a user document.
+ *  - STAFF users: built from user.staffRole + user.moduleScopes (stored on User)
+ *  - Others: empty array (no scoped roles in this system)
+ */
+const deriveModuleScopedRoles = (user) => {
+  if (user.globalRole === "STAFF" && user.staffRole && user.moduleScopes?.length > 0) {
+    return user.moduleScopes.map((module) => ({ module, role: user.staffRole }));
+  }
+  return [];
 };
 
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    console.log("Registering user:", { name, email }); // Debug log
     const { user } = await registerStudent({ name, email, password });
-
     res.status(201).json({
       message: "Registered successfully. Please check your email for your verification code.",
       user: { id: user._id, name: user.name, email: user.email, globalRole: user.globalRole },
@@ -34,7 +43,6 @@ export const verify = async (req, res) => {
   try {
     const { email, code } = req.body;
     const user = await verifyEmail({ email, code });
-
     res.json({
       message: "Email verified successfully",
       user: { id: user._id, name: user.name, email: user.email, globalRole: user.globalRole },
@@ -48,7 +56,6 @@ export const resend = async (req, res) => {
   try {
     const { email } = req.body;
     await resendVerificationCode({ email });
-
     res.json({ message: "Verification code resent. Please check your email." });
   } catch (e) {
     res.status(400).json({ message: e.message });
@@ -62,8 +69,7 @@ export const login = async (req, res) => {
 
     res.cookie("authToken", token, COOKIE_OPTIONS);
 
-    // Fetch module-scoped roles
-    const moduleScopedRoles = await ModuleScopedRole.find({ userId: user._id }).select("module role -_id");
+    const moduleScopedRoles = deriveModuleScopedRoles(user);
 
     res.json({
       message: "Login successful",
@@ -72,6 +78,9 @@ export const login = async (req, res) => {
         name: user.name,
         email: user.email,
         globalRole: user.globalRole,
+        staffRole: user.staffRole || null,
+        moduleScopes: user.moduleScopes || [],
+        status: user.status,
         moduleScopedRoles,
       },
     });
@@ -93,18 +102,23 @@ export const logout = async (req, res) => {
   }
 };
 
-// Session restoration — reads the authToken cookie and returns the current user
+// Session restoration
 export const me = async (req, res) => {
   try {
     const token = req.cookies.authToken;
     if (!token) return res.status(401).json({ message: "Not authenticated" });
 
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(payload.userId).select("-passwordHash -emailVerificationCodeHash -emailVerificationExpiresAt");
+    const user = await User.findById(payload.userId).select(
+      "-passwordHash -emailVerificationCodeHash -emailVerificationExpiresAt -inviteToken"
+    );
     if (!user) return res.status(401).json({ message: "User not found" });
 
-    // Fetch module-scoped roles
-    const moduleScopedRoles = await ModuleScopedRole.find({ userId: user._id }).select("module role -_id");
+    if (user.status === "INVITED") {
+      return res.status(401).json({ message: "Please accept your invite first." });
+    }
+
+    const moduleScopedRoles = deriveModuleScopedRoles(user);
 
     res.json({
       user: {
@@ -112,6 +126,9 @@ export const me = async (req, res) => {
         name: user.name,
         email: user.email,
         globalRole: user.globalRole,
+        staffRole: user.staffRole || null,
+        moduleScopes: user.moduleScopes || [],
+        status: user.status,
         moduleScopedRoles,
       },
     });

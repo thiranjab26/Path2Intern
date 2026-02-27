@@ -10,6 +10,7 @@ import {
     getApprovedQuestions,
     getMySubmissions,
     reviewQuestion,
+    updateQuestion,
     deleteQuestion,
 } from "../controllers/module.controller.js";
 import { requireAuth, requireRole, requireModuleRole } from "../middleware/auth.middleware.js";
@@ -107,6 +108,12 @@ router.get("/questions/:module/approved", getApprovedQuestions);
  * MODULE_MANAGER only (verified inside controller against the question's module).
  */
 router.patch("/questions/:id/review", reviewQuestion);
+
+/**
+ * PATCH /api/module/questions/:id
+ * Update a question. Submitter (pending only) OR module manager.
+ */
+router.patch("/questions/:id", updateQuestion);
 
 /**
  * DELETE /api/module/questions/:id

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { getPendingQuestions } from "../../services/moduleApi";
+import ActionCard from "../../components/ActionCard";
 
 const MODULE_COLORS = {
     DS: { bg: "bg-violet-600", light: "bg-violet-100", text: "text-violet-700", label: "Data Science" },
@@ -11,25 +12,7 @@ const MODULE_COLORS = {
     PM: { bg: "bg-pink-600", light: "bg-pink-100", text: "text-pink-700", label: "Project Management" },
 };
 
-const ActionCard = ({ icon, title, description, to, accent, badge }) => (
-    <Link
-        to={to}
-        className="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 p-5 flex gap-4 items-start relative"
-    >
-        {badge > 0 && (
-            <span className="absolute top-3 right-3 bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                {badge}
-            </span>
-        )}
-        <div className={`w-11 h-11 rounded-xl ${accent} flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform`}>
-            {icon}
-        </div>
-        <div>
-            <h3 className="font-semibold text-gray-900 text-sm mb-1">{title}</h3>
-            <p className="text-gray-500 text-xs leading-relaxed">{description}</p>
-        </div>
-    </Link>
-);
+
 
 export default function ModuleManagerDashboard() {
     const { user } = useAuth();

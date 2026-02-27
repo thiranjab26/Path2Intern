@@ -1,20 +1,8 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import ActionCard from "../../components/ActionCard";
 
-const ActionCard = ({ icon, title, description, to, accent }) => (
-    <Link
-        to={to}
-        className="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 p-5 flex gap-4 items-start"
-    >
-        <div className={`w-11 h-11 rounded-xl ${accent} flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform`}>
-            {icon}
-        </div>
-        <div>
-            <h3 className="font-semibold text-gray-900 text-sm mb-1">{title}</h3>
-            <p className="text-gray-500 text-xs leading-relaxed">{description}</p>
-        </div>
-    </Link>
-);
+
 
 const ProgressBar = ({ label, value, color }) => (
     <div className="mb-3">

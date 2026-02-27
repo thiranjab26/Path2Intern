@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import { ModuleScopedRole } from "../models/moduleScopedRole.model.js";
 import { Question } from "../models/question.model.js";
+import { resolveModuleRole } from "../middleware/auth.middleware.js";
 
 const VALID_MODULES = ["DS", "SE", "QA", "BA", "PM"];
 
@@ -73,12 +74,8 @@ export const assignOperator = async (req, res) => {
         validateModule(module);
 
         // Security: manager can only assign operators to modules they manage
-        const managerRole = await ModuleScopedRole.findOne({
-            userId: req.user.userId,
-            module,
-            role: "MODULE_MANAGER",
-        });
-        if (!managerRole) {
+        const managerRoleStr = await resolveModuleRole(req.user.userId, module, ["MODULE_MANAGER"]);
+        if (!managerRoleStr) {
             return res.status(403).json({ message: `You are not a MODULE_MANAGER for ${module}` });
         }
 
@@ -145,12 +142,8 @@ export const removeRole = async (req, res) => {
             // Can remove any role
         } else {
             // Must be a manager for this module
-            const callerRole = await ModuleScopedRole.findOne({
-                userId: req.user.userId,
-                module,
-                role: "MODULE_MANAGER",
-            });
-            if (!callerRole) {
+            const callerRoleStr = await resolveModuleRole(req.user.userId, module, ["MODULE_MANAGER"]);
+            if (!callerRoleStr) {
                 return res.status(403).json({ message: `You are not a MODULE_MANAGER for ${module}` });
             }
             if (existing.role === "MODULE_MANAGER") {
@@ -234,19 +227,18 @@ export const submitQuestion = async (req, res) => {
             return res.status(400).json({ message: "correctOption must be A, B, C, or D" });
         }
 
-        // Determine submitter's scoped role for this module
-        const scopedRole = await ModuleScopedRole.findOne({
-            userId: req.user.userId,
-            module,
-            role: { $in: ["MODULE_MANAGER", "MODULE_OPERATOR"] },
-        });
-        if (!scopedRole) {
+        // Determine submitter's scoped role for this module.
+        // Use req.resolvedModuleRole if the middleware already resolved it,
+        // otherwise fall back to resolveModuleRole() (handles both User model and legacy collection).
+        const submitterRole =
+            req.resolvedModuleRole ||
+            (await resolveModuleRole(req.user.userId, module, ["MODULE_MANAGER", "MODULE_OPERATOR"]));
+
+        if (!submitterRole) {
             return res.status(403).json({
                 message: `You do not have a MODULE_MANAGER or MODULE_OPERATOR role for module ${module}`,
             });
         }
-
-        const submitterRole = scopedRole.role; // "MODULE_MANAGER" or "MODULE_OPERATOR"
         // Managers' questions are immediately approved; operators' are pending
         const status = submitterRole === "MODULE_MANAGER" ? "approved" : "pending";
 
@@ -411,12 +403,8 @@ export const reviewQuestion = async (req, res) => {
         if (!question) return res.status(404).json({ message: "Question not found" });
 
         // Verify the reviewer is a manager for *this* question's module
-        const managerRole = await ModuleScopedRole.findOne({
-            userId: req.user.userId,
-            module: question.module,
-            role: "MODULE_MANAGER",
-        });
-        if (!managerRole) {
+        const reviewerRole = await resolveModuleRole(req.user.userId, question.module, ["MODULE_MANAGER"]);
+        if (!reviewerRole) {
             return res.status(403).json({
                 message: `You are not a MODULE_MANAGER for module ${question.module}`,
             });
@@ -461,18 +449,56 @@ export const deleteQuestion = async (req, res) => {
         if (!question) return res.status(404).json({ message: "Question not found" });
 
         const isSubmitter = question.submittedBy.toString() === req.user.userId;
-        const managerRole = await ModuleScopedRole.findOne({
-            userId: req.user.userId,
-            module: question.module,
-            role: "MODULE_MANAGER",
-        });
+        const managerRoleStr = await resolveModuleRole(req.user.userId, question.module, ["MODULE_MANAGER"]);
 
-        if (!isSubmitter && !managerRole) {
+        if (!isSubmitter && !managerRoleStr) {
             return res.status(403).json({ message: "Forbidden: you cannot delete this question" });
         }
 
         await Question.deleteOne({ _id: question._id });
         res.json({ message: "Question deleted." });
+    } catch (e) {
+        res.status(400).json({ message: e.message });
+    }
+};
+
+/**
+ * PATCH /api/module/questions/:id
+ * Body: { questionText?, options?, correctOption?, explanation? }
+ * Guard: original submitter (pending only) OR MODULE_MANAGER for that module
+ */
+export const updateQuestion = async (req, res) => {
+    try {
+        const question = await Question.findById(req.params.id);
+        if (!question) return res.status(404).json({ message: "Question not found" });
+
+        const isSubmitter = question.submittedBy.toString() === req.user.userId;
+        const managerRole = await resolveModuleRole(req.user.userId, question.module, ["MODULE_MANAGER"]);
+
+        if (!isSubmitter && !managerRole) {
+            return res.status(403).json({ message: "Forbidden: you cannot edit this question" });
+        }
+        if (isSubmitter && !managerRole && question.status !== "pending") {
+            return res.status(409).json({ message: "You can only edit questions still pending review" });
+        }
+
+        const { questionText, options, correctOption, explanation } = req.body;
+
+        if (questionText !== undefined) question.questionText = questionText;
+        if (explanation !== undefined) question.explanation = explanation;
+        if (correctOption !== undefined) {
+            if (!["A", "B", "C", "D"].includes(correctOption))
+                return res.status(400).json({ message: "correctOption must be A, B, C, or D" });
+            question.correctOption = correctOption;
+        }
+        if (options !== undefined) {
+            if (!Array.isArray(options) || options.length !== 4)
+                return res.status(400).json({ message: "Exactly 4 options required" });
+            question.options = options;
+        }
+
+        await question.save();
+        res.json({ message: "Question updated.", question: { id: question._id, module: question.module, questionText: question.questionText, status: question.status } });
     } catch (e) {
         res.status(400).json({ message: e.message });
     }

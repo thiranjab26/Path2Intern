@@ -1,22 +1,17 @@
 import jwt from "jsonwebtoken";
-import { ModuleScopedRole } from "../models/moduleScopedRole.model.js";
+import { User } from "../models/user.model.js";
 
 export const requireAuth = (req, res, next) => {
   try {
-    // Check Authorization header first
     let token = req.headers.authorization?.startsWith("Bearer ")
       ? req.headers.authorization.slice(7)
       : null;
 
-    // If no token in header, check cookies
-    if (!token) {
-      token = req.cookies.authToken;
-    }
-
+    if (!token) token = req.cookies.authToken;
     if (!token) return res.status(401).json({ message: "Missing token" });
 
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = payload; // { userId, globalRole }
+    req.user = payload; // { userId, globalRole, staffRole?, moduleScopes? }
     next();
   } catch {
     return res.status(401).json({ message: "Invalid or expired token" });
@@ -26,7 +21,6 @@ export const requireAuth = (req, res, next) => {
 export const requireRole = (...allowedRoles) => {
   return (req, res, next) => {
     if (!req.user?.globalRole) return res.status(401).json({ message: "Unauthorized" });
-
     if (!allowedRoles.includes(req.user.globalRole)) {
       return res.status(403).json({ message: "Forbidden" });
     }
@@ -35,29 +29,52 @@ export const requireRole = (...allowedRoles) => {
 };
 
 /**
- * Checks that the authenticated user holds one of the specified scoped
- * roles for a given module.
+ * Check if a user has a given role for a given module.
  *
- * Usage:
- *   requireModuleRole("DS", ["MODULE_MANAGER"])
- *   requireModuleRole("DS", ["MODULE_MANAGER", "MODULE_OPERATOR"])
+ * Checks TWO sources (in order):
+ *  1. User.staffRole + User.moduleScopes   → invite-based staff (new system)
+ *  2. ModuleScopedRole collection           → legacy manual assignments
  *
- * The module code is read from:
- *   1. req.params.module  (preferred for route params like /questions/:module)
- *   2. req.body.module    (for POST bodies)
- *   3. req.query.module   (query string fallback)
+ * Returns the effective role string ("MODULE_MANAGER" | "MODULE_OPERATOR") or null.
+ */
+export const resolveModuleRole = async (userId, module, allowedRoles = ["MODULE_MANAGER", "MODULE_OPERATOR"]) => {
+  // ── Source 1: User model (invite-based staff) ──────────────────────────────
+  const user = await User.findById(userId).select("staffRole moduleScopes globalRole").lean();
+  if (user && user.staffRole && user.moduleScopes?.includes(module)) {
+    if (allowedRoles.includes(user.staffRole)) {
+      return user.staffRole;
+    }
+  }
+
+  // ── Source 2: ModuleScopedRole collection (legacy) ─────────────────────────
+  try {
+    const { ModuleScopedRole } = await import("../models/moduleScopedRole.model.js");
+    const scoped = await ModuleScopedRole.findOne({
+      userId,
+      module,
+      role: { $in: allowedRoles },
+    }).lean();
+    if (scoped) return scoped.role;
+  } catch {
+    // ModuleScopedRole collection may not always be present — not a hard failure
+  }
+
+  return null;
+};
+
+/**
+ * Route middleware — verifies the caller holds one of allowedRoles for a module.
  *
- * Or you can hard-code the module code as the first argument.
+ * Module code is resolved from (in order):
+ *   hard-coded moduleCode arg → req.params.module → req.body.module → req.query.module
  *
- * @param {string|null} moduleCode  - Hard-coded module, or null to read from request
- * @param {string[]}    allowedRoles - Array of scoped roles that are permitted
+ * On success sets req.resolvedModuleRole to the effective role string.
  */
 export const requireModuleRole = (moduleCode, allowedRoles = ["MODULE_MANAGER"]) => {
   return async (req, res, next) => {
     try {
       if (!req.user?.userId) return res.status(401).json({ message: "Unauthorized" });
 
-      // Resolve the module code
       const module =
         moduleCode ||
         req.params.module ||
@@ -68,20 +85,14 @@ export const requireModuleRole = (moduleCode, allowedRoles = ["MODULE_MANAGER"])
         return res.status(400).json({ message: "Module code is required" });
       }
 
-      const scopedRole = await ModuleScopedRole.findOne({
-        userId: req.user.userId,
-        module,
-        role: { $in: allowedRoles },
-      });
-
-      if (!scopedRole) {
+      const role = await resolveModuleRole(req.user.userId, module, allowedRoles);
+      if (!role) {
         return res.status(403).json({
-          message: `Forbidden: you do not hold a required role (${allowedRoles.join(" or ")}) for module ${module}`,
+          message: `You do not have a ${allowedRoles.join(" or ")} role for module ${module}`,
         });
       }
 
-      // Attach to request for downstream use
-      req.moduleRole = scopedRole;
+      req.resolvedModuleRole = role; // downstream controllers can read this
       next();
     } catch {
       res.status(500).json({ message: "Server error checking module role" });
