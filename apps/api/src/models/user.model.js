@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema(
     // ── Account Status ───────────────────────────────────────────────────────
     status: {
       type: String,
-      enum: ["INVITED", "ACTIVE", "SUSPENDED"],
+      enum: ["INVITED", "PENDING", "ACTIVE", "SUSPENDED"],
       default: "ACTIVE",
     },
 
@@ -59,6 +59,11 @@ const userSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
+
+    // ── Organisation fields ───────────────────────────────────────────────────
+    organizationName: { type: String, default: null, trim: true },
+    documentUrl: { type: String, default: null },   // uploaded PDF path
+    approvalNote: { type: String, default: null },  // UniAdmin decline reason
 
     // ── Optional relations ───────────────────────────────────────────────────
     universityId: { type: mongoose.Schema.Types.ObjectId, ref: "University", default: null },

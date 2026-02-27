@@ -12,7 +12,8 @@ export const getDashboardRoute = (globalRole, moduleScopedRoles = []) => {
     switch (globalRole) {
         case "SYSTEM_ADMIN": return "/dashboard/system-admin";
         case "UNIVERSITY_ADMIN": return "/dashboard/university-admin";
-        case "RECRUITER": return "/dashboard/recruiter";
+        case "RECRUITER":
+        case "ORGANIZATION": return "/dashboard/recruiter";
         case "STUDENT": return "/dashboard/student";
         default: return "/";
     }
@@ -31,6 +32,7 @@ export const getRoleLabel = (globalRole, moduleScopedRoles = []) => {
         case "SYSTEM_ADMIN": return "System Admin";
         case "UNIVERSITY_ADMIN": return "University Admin";
         case "RECRUITER": return "Recruiter";
+        case "ORGANIZATION": return "Organisation";
         case "STUDENT": return "Student";
         default: return "User";
     }
@@ -46,7 +48,8 @@ export const getRoleBadgeColors = (globalRole, moduleScopedRoles = []) => {
     switch (globalRole) {
         case "SYSTEM_ADMIN": return { bg: "bg-red-100", text: "text-red-700" };
         case "UNIVERSITY_ADMIN": return { bg: "bg-amber-100", text: "text-amber-700" };
-        case "RECRUITER": return { bg: "bg-green-100", text: "text-green-700" };
+        case "RECRUITER":
+        case "ORGANIZATION": return { bg: "bg-green-100", text: "text-green-700" };
         case "STUDENT": return { bg: "bg-blue-100", text: "text-blue-700" };
         default: return { bg: "bg-gray-100", text: "text-gray-700" };
     }
