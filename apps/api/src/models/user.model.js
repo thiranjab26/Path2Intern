@@ -12,22 +12,55 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-    passwordHash: { type: String, required: true },
+    passwordHash: {
+      type: String,
+      required: false, // INVITED staff have no password yet
+      default: null,
+    },
 
+    // ── Roles ────────────────────────────────────────────────────────────────
     globalRole: {
       type: String,
       required: true,
-      enum: ["SYSTEM_ADMIN", "UNIVERSITY_ADMIN", "STAFF", "STUDENT", "ORGANIZATION"],
+      enum: ["SYSTEM_ADMIN", "UNIVERSITY_ADMIN", "STAFF", "ORGANIZATION", "STUDENT"],
       default: "STUDENT",
     },
 
-    isEmailVerified: { type: Boolean, default: false },
+    // STAFF-specific: sub-role and module assignments
+    staffRole: {
+      type: String,
+      enum: ["MODULE_MANAGER", "MODULE_OPERATOR"],
+      default: null,
+    },
 
-    // Email verification (OTP/code)
+    moduleScopes: {
+      type: [{ type: String, enum: ["DS", "SE", "QA", "BA", "PM"] }],
+      default: [],
+    },
+
+    // ── Account Status ───────────────────────────────────────────────────────
+    status: {
+      type: String,
+      enum: ["INVITED", "ACTIVE", "SUSPENDED"],
+      default: "ACTIVE",
+    },
+
+    // ── Email Verification (students via OTP) ────────────────────────────────
+    isEmailVerified: { type: Boolean, default: false },
     emailVerificationCodeHash: { type: String, default: null },
     emailVerificationExpiresAt: { type: Date, default: null },
 
-    // optional relations
+    // ── Staff Invite Token ───────────────────────────────────────────────────
+    // Plain code is given to the admin, stored here as a bcrypt hash
+    inviteToken: { type: String, default: null },
+    inviteExpiresAt: { type: Date, default: null },
+    invitedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    // ── Optional relations ───────────────────────────────────────────────────
     universityId: { type: mongoose.Schema.Types.ObjectId, ref: "University", default: null },
     organizationId: { type: mongoose.Schema.Types.ObjectId, ref: "Organization", default: null },
   },
