@@ -10,6 +10,17 @@ const createTransporter = () => {
   });
 };
 
+// Generic mailer used by contact reply, etc.
+export const sendEmail = async ({ to, subject, html }) => {
+  const transporter = createTransporter();
+  const info = await transporter.sendMail({
+    from: '"Path2Intern" <noreply@path2intern.com>',
+    to, subject, html,
+  });
+  console.log("Email sent:", info.messageId);
+  return true;
+};
+
 export const sendVerificationEmail = async (email, verificationCode) => {
   const transporter = createTransporter();
 

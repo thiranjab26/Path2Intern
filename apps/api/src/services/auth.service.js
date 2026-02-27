@@ -116,6 +116,9 @@ export const loginUser = async ({ email, password }) => {
   if (user.status === "INVITED") {
     throw new Error("Please accept your invite first. Use the invite code provided by your University Admin.");
   }
+  if (user.status === "PENDING") {
+    throw new Error("Your account is pending approval by the University Admin. You will be notified once approved.");
+  }
   if (user.status === "SUSPENDED") {
     throw new Error("Your account has been suspended. Please contact your University Admin.");
   }
@@ -144,4 +147,43 @@ export const loginUser = async ({ email, password }) => {
   );
 
   return { user, token };
+};
+
+// ─── Organisation registration ────────────────────────────────────────────────
+
+export const registerOrganization = async ({ name, email, password, organizationName, documentUrl }) => {
+  const existing = await User.findOne({ email: email.toLowerCase() });
+  if (existing) throw new Error("Email already registered");
+
+  // Orgs can use any email (gmail, outlook, etc.) — no domain restriction
+  validatePassword(password);
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  const code = generate6DigitCode();
+  const emailVerificationCodeHash = await bcrypt.hash(code, 10);
+  const emailVerificationExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+  const user = await User.create({
+    name,
+    email: email.toLowerCase(),
+    passwordHash,
+    globalRole: "ORGANIZATION",
+    organizationName: organizationName || name,
+    documentUrl: documentUrl || null,
+    // OTP verified but still PENDING until UniAdmin approves
+    status: "PENDING",
+    isEmailVerified: false,
+    emailVerificationCodeHash,
+    emailVerificationExpiresAt,
+  });
+
+  try {
+    await sendVerificationEmail(email, code);
+  } catch (emailError) {
+    console.error("Failed to send verification email:", emailError.message);
+    await User.findByIdAndDelete(user._id);
+    throw new Error("Failed to send verification email. Please try again.");
+  }
+
+  return { user };
 };

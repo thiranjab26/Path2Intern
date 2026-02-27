@@ -1,11 +1,13 @@
 import jwt from "jsonwebtoken";
 import {
   registerStudent,
+  registerOrganization,
   verifyEmail,
   resendVerificationCode,
   loginUser,
 } from "../services/auth.service.js";
 import { User } from "../models/user.model.js";
+import { uploadOrgDoc } from "../middleware/upload.middleware.js";
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -37,6 +39,34 @@ export const register = async (req, res) => {
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
+};
+
+export const registerOrg = (req, res) => {
+  uploadOrgDoc(req, res, async (uploadErr) => {
+    if (uploadErr) {
+      return res.status(400).json({ message: uploadErr.message || "File upload failed" });
+    }
+    try {
+      const { name, email, password, organizationName } = req.body;
+      const documentUrl = req.file
+        ? `/uploads/org-docs/${req.file.filename}`
+        : null;
+
+      const { user } = await registerOrganization({
+        name,
+        email,
+        password,
+        organizationName,
+        documentUrl,
+      });
+      res.status(201).json({
+        message: "Registered successfully. Please check your email for your OTP verification code.",
+        user: { id: user._id, name: user.name, email: user.email, globalRole: user.globalRole, organizationName: user.organizationName },
+      });
+    } catch (e) {
+      res.status(400).json({ message: e.message });
+    }
+  });
 };
 
 export const verify = async (req, res) => {
@@ -81,6 +111,7 @@ export const login = async (req, res) => {
         staffRole: user.staffRole || null,
         moduleScopes: user.moduleScopes || [],
         status: user.status,
+        organizationName: user.organizationName || null,
         moduleScopedRoles,
       },
     });
@@ -114,8 +145,8 @@ export const me = async (req, res) => {
     );
     if (!user) return res.status(401).json({ message: "User not found" });
 
-    if (user.status === "INVITED") {
-      return res.status(401).json({ message: "Please accept your invite first." });
+    if (user.status === "INVITED" || user.status === "PENDING") {
+      return res.status(401).json({ message: "Please accept your invite or await approval." });
     }
 
     const moduleScopedRoles = deriveModuleScopedRoles(user);
@@ -129,6 +160,7 @@ export const me = async (req, res) => {
         staffRole: user.staffRole || null,
         moduleScopes: user.moduleScopes || [],
         status: user.status,
+        organizationName: user.organizationName || null,
         moduleScopedRoles,
       },
     });
