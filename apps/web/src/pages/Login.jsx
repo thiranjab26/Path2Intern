@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
+import { getDashboardRoute } from "../utils/roleUtils";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -18,8 +19,12 @@ export default function Login() {
 
     try {
       const response = await api.post("/api/auth/login", { email, password });
-      login(response.data.user); // store in AuthContext (cookie already set by server)
-      navigate("/profile");
+      const userData = response.data.user;
+      login(userData); // store in AuthContext (cookie already set by server)
+
+      // Redirect to the correct role-based dashboard
+      const dashboardRoute = getDashboardRoute(userData.globalRole, userData.moduleScopedRoles);
+      navigate(dashboardRoute);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to login. Please try again.");
     } finally {

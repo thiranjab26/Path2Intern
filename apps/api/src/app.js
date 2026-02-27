@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
+import moduleRoutes from "./routes/module.routes.js";
 
 const app = express();
 
@@ -18,7 +19,8 @@ app.get("/health", (req, res) => {
   res.json({ status: "OK", message: "Path2Intern API running" });
 });
 
-// Auth routes
+// Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/module", moduleRoutes);
 
 export default app;

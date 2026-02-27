@@ -6,6 +6,7 @@ import {
   loginUser,
 } from "../services/auth.service.js";
 import { User } from "../models/user.model.js";
+import { ModuleScopedRole } from "../models/moduleScopedRole.model.js";
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -61,9 +62,18 @@ export const login = async (req, res) => {
 
     res.cookie("authToken", token, COOKIE_OPTIONS);
 
+    // Fetch module-scoped roles
+    const moduleScopedRoles = await ModuleScopedRole.find({ userId: user._id }).select("module role -_id");
+
     res.json({
       message: "Login successful",
-      user: { id: user._id, name: user.name, email: user.email, globalRole: user.globalRole },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        globalRole: user.globalRole,
+        moduleScopedRoles,
+      },
     });
   } catch (e) {
     res.status(400).json({ message: e.message });
@@ -93,8 +103,17 @@ export const me = async (req, res) => {
     const user = await User.findById(payload.userId).select("-passwordHash -emailVerificationCodeHash -emailVerificationExpiresAt");
     if (!user) return res.status(401).json({ message: "User not found" });
 
+    // Fetch module-scoped roles
+    const moduleScopedRoles = await ModuleScopedRole.find({ userId: user._id }).select("module role -_id");
+
     res.json({
-      user: { id: user._id, name: user.name, email: user.email, globalRole: user.globalRole },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        globalRole: user.globalRole,
+        moduleScopedRoles,
+      },
     });
   } catch {
     res.status(401).json({ message: "Invalid or expired session" });

@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
     globalRole: {
       type: String,
       required: true,
-      enum: ["SYSTEM_ADMIN", "UNIVERSITY_ADMIN", "STAFF", "STUDENT", "ORGANIZATION"],
+      enum: ["SYSTEM_ADMIN", "UNIVERSITY_ADMIN", "RECRUITER", "STUDENT"],
       default: "STUDENT",
     },
 
