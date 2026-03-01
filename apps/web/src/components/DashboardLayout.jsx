@@ -39,6 +39,17 @@ const NAV = {
             { label: "Post a Job", to: "/org/post-job", icon: "plus" },
         ],
     },
+    // RECRUITER is the legacy name for ORGANIZATION — same nav config
+    RECRUITER: {
+        accent: "text-green-400",
+        activeBg: "bg-green-500/10 text-green-300 border-green-500/20",
+        hover: "hover:bg-slate-800 hover:text-white",
+        dot: "bg-green-500",
+        items: [
+            { label: "Overview", to: "/dashboard/recruiter", icon: "grid" },
+            { label: "Post a Job", to: "/org/post-job", icon: "plus" },
+        ],
+    },
     STUDENT: {
         accent: "text-blue-400",
         activeBg: "bg-blue-500/10 text-blue-300 border-blue-500/20",
@@ -111,7 +122,10 @@ function resolveRole(user) {
     const scoped = user.moduleScopedRoles || [];
     if (scoped.some((r) => r.role === "MODULE_MANAGER")) return "MODULE_MANAGER";
     if (scoped.some((r) => r.role === "MODULE_OPERATOR")) return "MODULE_OPERATOR";
-    return user.globalRole || null;
+    const role = user.globalRole || null;
+    // RECRUITER is the legacy role name — map it to ORGANIZATION nav
+    if (role === "RECRUITER") return "ORGANIZATION";
+    return role;
 }
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
@@ -268,9 +282,9 @@ export default function DashboardLayout({ children }) {
     const [collapsed, setCollapsed] = useState(false);
 
     return (
-        <div className="flex min-h-screen bg-[#0a0f1e]">
+        <div className="flex min-h-screen bg-gray-50">
             <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
-            <main className="flex-1 overflow-y-auto bg-[#0a0f1e]">
+            <main className="flex-1 overflow-y-auto bg-gray-50">
                 {children}
             </main>
         </div>

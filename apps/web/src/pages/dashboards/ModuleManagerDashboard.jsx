@@ -15,7 +15,7 @@ const DarkActionCard = ({ to, icon, title, description, disabled, badge }) => (
     <Link
         to={disabled ? "#" : to}
         onClick={disabled ? (e) => e.preventDefault() : undefined}
-        className={`bg-slate-900 border border-slate-800 rounded-2xl p-5 flex items-start gap-4 transition-all duration-200 ${disabled
+        className={`bg-white border border-gray-200 rounded-2xl p-5 flex items-start gap-4 transition-all duration-200 ${disabled
                 ? "opacity-40 cursor-not-allowed"
                 : "hover:border-purple-500/30 hover:bg-slate-900/80 hover:-translate-y-0.5 hover:shadow-lg"
             }`}
@@ -26,15 +26,15 @@ const DarkActionCard = ({ to, icon, title, description, disabled, badge }) => (
                 <p className="text-sm font-semibold text-white">{title}</p>
                 {badge > 0 && <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{badge}</span>}
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed">{description}</p>
+            <p className="text-xs text-gray-500 leading-relaxed">{description}</p>
         </div>
     </Link>
 );
 
 const StatCard = ({ label, value, icon, accent }) => (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-colors">
+    <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-colors">
         <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">{label}</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">{label}</p>
             <span className="text-lg">{icon}</span>
         </div>
         <p className={`text-3xl font-bold ${accent}`}>{value}</p>
@@ -59,15 +59,15 @@ export default function ModuleManagerDashboard() {
     }, []); // eslint-disable-line
 
     return (
-        <div className="min-h-screen bg-[#0a0f1e]">
+        <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="border-b border-slate-800 px-8 py-8">
+            <div className="border-b border-gray-200 bg-white px-8 py-8">
                 <div className="max-w-7xl mx-auto">
                     <span className="bg-purple-500/20 text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-purple-500/30 uppercase tracking-wider">
                         Module Manager
                     </span>
-                    <h1 className="text-3xl font-bold text-white mt-2">Module Manager Dashboard</h1>
-                    <p className="text-slate-400 mt-1 text-sm">
+                    <h1 className="text-3xl font-bold text-gray-900 mt-2">Module Manager Dashboard</h1>
+                    <p className="text-gray-500 mt-1 text-sm">
                         Manage operators, review MCQ submissions, and oversee content for your modules.
                     </p>
                     {/* Module pills */}
@@ -98,12 +98,12 @@ export default function ModuleManagerDashboard() {
                 {/* Your modules */}
                 {moduleScopedRoles.length > 0 && (
                     <div className="mb-10">
-                        <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-5">Your Modules</h2>
+                        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-5">Your Modules</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {moduleScopedRoles.map((r) => {
                                 const c = MODULE_COLORS[r.module] || { bg: "bg-slate-700", badge: "bg-slate-700 text-slate-300 border-slate-600", label: r.module };
                                 return (
-                                    <div key={r.module} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex items-center gap-4 hover:border-slate-700 transition-colors">
+                                    <div key={r.module} className="bg-white border border-gray-200 rounded-2xl p-5 flex items-center gap-4 hover:border-slate-700 transition-colors">
                                         <div className={`w-12 h-12 rounded-xl ${c.bg} text-white flex items-center justify-center font-bold text-base flex-shrink-0`}>
                                             {r.module}
                                         </div>
@@ -119,7 +119,7 @@ export default function ModuleManagerDashboard() {
                 )}
 
                 {/* Quick Actions */}
-                <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-5">Quick Actions</h2>
+                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-5">Quick Actions</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <DarkActionCard to="/module/review" icon="✅" title="Review Queue" description="Approve or decline pending MCQs submitted by operators." badge={pendingCount} />
                     <DarkActionCard to="/module/submit-question" icon="➕" title="Submit a Question" description="Add your own MCQ — published immediately without review." />

@@ -104,13 +104,13 @@ export default function StaffManagementPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0f1e]">
+        <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="border-b border-slate-800 px-8 py-8">
+            <div className="border-b border-gray-200 bg-white px-8 py-8">
                 <div className="max-w-7xl mx-auto">
                     <span className="bg-amber-500/20 text-amber-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-amber-500/30 uppercase tracking-wider">Administration</span>
-                    <h1 className="text-3xl font-bold text-white mt-2">Staff Management</h1>
-                    <p className="text-slate-400 mt-1 text-sm">Invite staff, assign module roles, and manage access.</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mt-2">Staff Management</h1>
+                    <p className="text-gray-500 mt-1 text-sm">Invite staff, assign module roles, and manage access.</p>
                 </div>
             </div>
 
@@ -119,7 +119,7 @@ export default function StaffManagementPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* ── Invite form */}
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 lg:col-span-1">
+                    <div className="bg-white border border-gray-200 rounded-2xl p-6 lg:col-span-1">
                         <h2 className="text-base font-semibold text-white mb-5 flex items-center gap-2">
                             <span className="w-7 h-7 bg-amber-500/20 text-amber-400 rounded-lg flex items-center justify-center text-xs font-bold border border-amber-500/30">+</span>
                             Invite Staff
@@ -164,7 +164,7 @@ export default function StaffManagementPage() {
                     </div>
 
                     {/* ── Staff table */}
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl lg:col-span-2 overflow-hidden">
+                    <div className="bg-white border border-gray-200 rounded-2xl lg:col-span-2 overflow-hidden">
                         <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
                             <h2 className="text-base font-semibold text-white">All Staff</h2>
                             <span className="text-xs bg-slate-800 text-slate-400 font-medium px-2.5 py-1 rounded-full border border-slate-700">{staff.length}</span>

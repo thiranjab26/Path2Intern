@@ -25,7 +25,7 @@ function QuestionCard({ question, onReviewed }) {
     };
 
     return (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-colors">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-colors">
             {/* Meta row */}
             <div className="flex items-center gap-2 mb-3">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${MODULE_COLORS[question.module]?.bg || "bg-slate-600"}`}>{question.module}</span>
@@ -54,7 +54,7 @@ function QuestionCard({ question, onReviewed }) {
 
             {declining && (
                 <div className="mb-4">
-                    <label className="block text-xs font-semibold text-slate-400 mb-1">Reason for declining</label>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Reason for declining</label>
                     <textarea rows={2} className="w-full border border-red-500/30 rounded-xl px-3 py-2 text-sm bg-slate-800 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
                         placeholder="Explain why this question is being declined..." value={reason} onChange={(e) => { setReason(e.target.value); setError(""); }} />
                     {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
@@ -104,12 +104,12 @@ export default function ReviewQueuePage() {
     const handleReviewed = (id) => setQuestions((prev) => prev.filter((q) => q._id !== id));
 
     return (
-        <div className="min-h-screen bg-[#0a0f1e]">
-            <div className="border-b border-slate-800 px-8 py-8">
+        <div className="min-h-screen bg-gray-50">
+            <div className="border-b border-gray-200 bg-white px-8 py-8">
                 <div className="max-w-5xl mx-auto">
                     <span className="bg-purple-500/20 text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-purple-500/30 uppercase tracking-wider">Module Manager</span>
-                    <h1 className="text-3xl font-bold text-white mt-2">Review Queue</h1>
-                    <p className="text-slate-400 mt-1 text-sm">Review and approve or decline MCQs submitted by module operators.</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mt-2">Review Queue</h1>
+                    <p className="text-gray-500 mt-1 text-sm">Review and approve or decline MCQs submitted by module operators.</p>
                 </div>
             </div>
 
@@ -127,7 +127,7 @@ export default function ReviewQueuePage() {
 
                 {!loading && !fetchError && (
                     <div className="flex items-center gap-3 mb-6">
-                        <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-widest">Pending for {MODULE_COLORS[activeModule]?.label || activeModule}</h2>
+                        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-widest">Pending for {MODULE_COLORS[activeModule]?.label || activeModule}</h2>
                         <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${questions.length > 0 ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : "bg-slate-800 text-slate-500 border border-slate-700"}`}>{questions.length}</span>
                     </div>
                 )}

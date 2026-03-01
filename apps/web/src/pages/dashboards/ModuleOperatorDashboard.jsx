@@ -39,17 +39,17 @@ export default function ModuleOperatorDashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0f1e]">
+        <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="border-b border-slate-800 px-8 py-8">
+            <div className="border-b border-gray-200 bg-white px-8 py-8">
                 <div className="max-w-7xl mx-auto">
                     <span className="bg-indigo-500/20 text-indigo-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-indigo-500/30 uppercase tracking-wider">
                         Module Operator
                     </span>
-                    <h1 className="text-3xl font-bold text-white mt-2">
+                    <h1 className="text-3xl font-bold text-gray-900 mt-2">
                         Welcome back, {user?.name?.split(" ")[0]}! 👋
                     </h1>
-                    <p className="text-slate-400 mt-1 text-sm">
+                    <p className="text-gray-500 mt-1 text-sm">
                         Submit MCQs and track your contributions to the module question banks.
                     </p>
                     {operatorModules.length > 0 && (
@@ -76,9 +76,9 @@ export default function ModuleOperatorDashboard() {
                         { label: "Pending", value: loadingSubmissions ? "—" : stats.pending, icon: "⏳", accent: "text-amber-400" },
                         { label: "Declined", value: loadingSubmissions ? "—" : stats.declined, icon: "❌", accent: "text-red-400" },
                     ].map(({ label, value, icon, accent }) => (
-                        <div key={label} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-colors">
+                        <div key={label} className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-colors">
                             <div className="flex items-center justify-between mb-3">
-                                <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">{label}</p>
+                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">{label}</p>
                                 <span className="text-lg">{icon}</span>
                             </div>
                             <p className={`text-3xl font-bold ${accent}`}>{value}</p>
@@ -87,23 +87,23 @@ export default function ModuleOperatorDashboard() {
                 </div>
 
                 {/* Quick actions */}
-                <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-5">Quick Actions</h2>
+                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-5">Quick Actions</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
                     <Link to="/module/submit-question"
-                        className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex items-start gap-4 hover:border-indigo-500/30 hover:-translate-y-0.5 hover:shadow-lg transition-all">
+                        className="bg-white border border-gray-200 rounded-2xl p-5 flex items-start gap-4 hover:border-indigo-500/30 hover:-translate-y-0.5 hover:shadow-lg transition-all">
                         <div className="text-2xl mt-0.5">➕</div>
                         <div>
-                            <p className="text-sm font-semibold text-white mb-1">Submit a Question</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
+                            <p className="text-sm font-semibold text-gray-900 mb-1">Submit a Question</p>
+                            <p className="text-xs text-gray-500 leading-relaxed">
                                 Add a new MCQ to your module's question bank. Reviewed by a Module Manager before going live.
                             </p>
                         </div>
                     </Link>
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex items-start gap-4 hover:border-slate-700 transition-colors">
+                    <div className="bg-white border border-gray-200 rounded-2xl p-5 flex items-start gap-4 hover:border-slate-700 transition-colors">
                         <div className="text-2xl mt-0.5">🗂️</div>
                         <div>
-                            <p className="text-sm font-semibold text-white mb-1">My Module Assignments</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
+                            <p className="text-sm font-semibold text-gray-900 mb-1">My Module Assignments</p>
+                            <p className="text-xs text-gray-500 leading-relaxed">
                                 You are a Module Operator for: {operatorModules.length > 0
                                     ? operatorModules.map((r) => MODULE_COLORS[r.module]?.label || r.module).join(", ")
                                     : "No modules assigned yet."}
@@ -113,8 +113,8 @@ export default function ModuleOperatorDashboard() {
                 </div>
 
                 {/* Submissions table */}
-                <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-5">My Submissions</h2>
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-5">My Submissions</h2>
+                <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                     {loadingSubmissions ? (
                         <div className="flex justify-center py-14">
                             <div className="w-8 h-8 border-4 border-indigo-400 border-t-transparent rounded-full animate-spin" />

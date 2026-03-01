@@ -7,9 +7,14 @@ import { PublicNavbar, AppNavbar } from "../components/DarkNavbar";
 
 /* ── Colour helpers ──────────────────────────────────────────────────────── */
 const WORK_MODE_COLORS = {
-  Remote: "bg-green-500/10 text-green-400 border-green-500/20",
-  Hybrid: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  "On-site": "bg-amber-500/10 text-amber-400 border-amber-500/20",
+  Remote: "bg-green-100 text-green-700 border-green-200",
+  Hybrid: "bg-blue-100 text-blue-700 border-blue-200",
+  "On-site": "bg-amber-100 text-amber-700 border-amber-200",
+};
+const TYPE_COLORS = {
+  Internship: "bg-purple-100 text-purple-700 border-purple-200",
+  "Part-time": "bg-cyan-100 text-cyan-700 border-cyan-200",
+  "Full-time": "bg-emerald-100 text-emerald-700 border-emerald-200",
 };
 const LOGO_COLORS = ["bg-blue-600", "bg-violet-600", "bg-pink-600", "bg-green-600", "bg-amber-500", "bg-cyan-600", "bg-rose-600", "bg-indigo-600"];
 const logoColor = (name) => LOGO_COLORS[(name?.charCodeAt(0) || 0) % LOGO_COLORS.length];
@@ -18,43 +23,47 @@ const logoColor = (name) => LOGO_COLORS[(name?.charCodeAt(0) || 0) % LOGO_COLORS
 function JobCard({ job }) {
   const initials = (job.company || "?").split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-200 hover:-translate-y-0.5 flex flex-col gap-3">
+    <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 flex flex-col gap-3">
       <div className="flex items-start gap-3">
         <div className={`w-11 h-11 rounded-xl ${logoColor(job.company)} text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-md`}>
           {initials}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-white truncate">{job.title}</h3>
-          <p className="text-sm text-slate-400">{job.company}</p>
+          <h3 className="text-sm font-semibold text-gray-900 truncate">{job.title}</h3>
+          <p className="text-sm text-gray-500">{job.company}</p>
         </div>
       </div>
       <div className="flex items-center gap-2 flex-wrap text-xs">
-        <span className="text-slate-400">📍 {job.location}</span>
-        {job.duration && <span className="text-slate-400">· {job.duration}</span>}
+        <span className="text-gray-500">📍 {job.location}</span>
+        {job.duration && <span className="text-gray-400">· {job.duration}</span>}
         {job.workMode && (
-          <span className={`px-2 py-0.5 rounded-full font-medium border ${WORK_MODE_COLORS[job.workMode] || "bg-slate-800 text-slate-400"}`}>{job.workMode}</span>
+          <span className={`px-2 py-0.5 rounded-full font-medium border ${WORK_MODE_COLORS[job.workMode] || "bg-gray-100 text-gray-600 border-gray-200"}`}>{job.workMode}</span>
+        )}
+        {job.type && (
+          <span className={`px-2 py-0.5 rounded-full font-medium border ${TYPE_COLORS[job.type] || "bg-gray-100 text-gray-600 border-gray-200"}`}>{job.type}</span>
         )}
       </div>
       {job.skills?.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {job.skills.slice(0, 4).map(s => (
-            <span key={s} className="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full">{s}</span>
+            <span key={s} className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">{s}</span>
           ))}
-          {job.skills.length > 4 && <span className="text-xs text-slate-500">+{job.skills.length - 4}</span>}
+          {job.skills.length > 4 && <span className="text-xs text-gray-400">+{job.skills.length - 4}</span>}
         </div>
       )}
-      {job.salary && <p className="text-xs text-slate-500">{job.salary}</p>}
-      <button className="mt-auto w-full text-center text-sm font-medium text-blue-400 border border-blue-500/30 rounded-xl py-2 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors">View &amp; Apply</button>
+      {job.salaryDisplay && <p className="text-xs text-emerald-700 font-semibold">💰 {job.salaryDisplay}</p>}
+      {job.deadline && <p className="text-xs text-gray-400">Deadline: {new Date(job.deadline).toLocaleDateString()}</p>}
+      <button className="mt-auto w-full text-center text-sm font-medium text-blue-600 border border-blue-200 rounded-xl py-2 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors bg-blue-50">View & Apply</button>
     </div>
   );
 }
 
 function SkeletonCard() {
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 animate-pulse flex flex-col gap-3">
-      <div className="flex gap-3"><div className="w-11 h-11 rounded-xl bg-slate-800 flex-shrink-0" /><div className="flex-1 space-y-2"><div className="h-3 bg-slate-800 rounded w-3/4" /><div className="h-3 bg-slate-800 rounded w-1/2" /></div></div>
-      <div className="h-3 bg-slate-800 rounded w-full" />
-      <div className="h-3 bg-slate-700 rounded w-2/3" />
+    <div className="bg-white border border-gray-100 rounded-2xl p-5 animate-pulse flex flex-col gap-3">
+      <div className="flex gap-3"><div className="w-11 h-11 rounded-xl bg-gray-200 flex-shrink-0" /><div className="flex-1 space-y-2"><div className="h-3 bg-gray-200 rounded w-3/4" /><div className="h-3 bg-gray-200 rounded w-1/2" /></div></div>
+      <div className="h-3 bg-gray-100 rounded w-full" />
+      <div className="h-3 bg-gray-100 rounded w-2/3" />
     </div>
   );
 }
@@ -107,11 +116,11 @@ function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-xl px-4 py-3">{error}</div>}
       <div className="grid sm:grid-cols-2 gap-4">
-        <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Name</label><input required value={form.name} onChange={set("name")} className={inp} placeholder="Your name" /></div>
-        <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Email</label><input type="email" required value={form.email} onChange={set("email")} className={inp} placeholder="you@example.com" /></div>
+        <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Name</label><input required value={form.name} onChange={set("name")} className={inp} placeholder="Your name" /></div>
+        <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Email</label><input type="email" required value={form.email} onChange={set("email")} className={inp} placeholder="you@example.com" /></div>
       </div>
-      <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Subject</label><input required value={form.subject} onChange={set("subject")} className={inp} placeholder="How can we help?" /></div>
-      <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Message</label><textarea required rows={5} value={form.message} onChange={set("message")} className={`${inp} resize-none`} placeholder="Tell us more…" /></div>
+      <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Subject</label><input required value={form.subject} onChange={set("subject")} className={inp} placeholder="How can we help?" /></div>
+      <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Message</label><textarea required rows={5} value={form.message} onChange={set("message")} className={`${inp} resize-none`} placeholder="Tell us more…" /></div>
       <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl py-3 text-sm transition-colors disabled:opacity-60">
         {loading ? "Sending…" : "Send Message"}
       </button>
@@ -145,15 +154,15 @@ export default function Home() {
     return () => clearTimeout(t);
   }, [search, workMode, type]);
 
-  /* ── Logged-in view ─────────────────────────────────────────────────── */
+  /* ── Logged-in view ─────────────────────────────────────────────── */
   if (!authLoading && user) {
     const dashboardRoute = getDashboardRoute(user.globalRole, user.moduleScopedRoles);
     return (
-      <div className="min-h-screen bg-[#0a0f1e] flex flex-col">
+      <div className="min-h-screen bg-gray-50 flex flex-col">
         <AppNavbar user={user} logout={logout} />
         <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
           {/* Welcome banner */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xl shadow-blue-600/20">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl shadow-blue-600/20">
             <div>
               <h1 className="text-xl font-bold text-white mb-1">Welcome back, {user.name.split(" ")[0]}! 👋</h1>
               <p className="text-blue-100 text-sm">Browse the latest internship opportunities below.</p>
@@ -166,16 +175,16 @@ export default function Home() {
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
             <div className="relative flex-1">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               <input value={search} onChange={(e) => setSearch(e.target.value)} type="text" placeholder="Search internships, skills, companies…"
-                className="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-700 text-white placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-gray-200 text-gray-900 placeholder-gray-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" />
             </div>
             {[
-              { value: workMode, onChange: (v) => setWorkMode(v), opts: ["Remote", "Hybrid", "On-site"], label: "All locations" },
+              { value: workMode, onChange: (v) => setWorkMode(v), opts: ["Remote", "Hybrid", "On-site"], label: "All work modes" },
               { value: type, onChange: (v) => setType(v), opts: ["Internship", "Part-time", "Full-time"], label: "All types" },
             ].map(({ value, onChange, opts, label }, i) => (
               <select key={i} value={value} onChange={(e) => onChange(e.target.value)}
-                className="text-sm bg-slate-900 border border-slate-700 text-slate-300 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="text-sm bg-white border border-gray-200 text-gray-700 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
                 <option value="">{label}</option>
                 {opts.map((o) => <option key={o}>{o}</option>)}
               </select>
@@ -183,8 +192,8 @@ export default function Home() {
           </div>
 
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-semibold text-white">
-              Latest Internships {!jobsLoading && <span className="text-sm font-normal text-slate-400 ml-2">({jobs.length} open)</span>}
+            <h2 className="text-lg font-semibold text-gray-900">
+              Latest Internships {!jobsLoading && <span className="text-sm font-normal text-gray-500 ml-2">({jobs.length} open)</span>}
             </h2>
           </div>
 
@@ -195,7 +204,7 @@ export default function Home() {
           ) : jobs.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-5xl mb-3">📭</p>
-              <p className="text-slate-400 text-sm">{search || workMode || type ? "No results match your filters." : "No internships posted yet. Check back soon!"}</p>
+              <p className="text-gray-400 text-sm">{search || workMode || type ? "No results match your filters." : "No internships posted yet. Check back soon!"}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -203,18 +212,18 @@ export default function Home() {
             </div>
           )}
         </main>
-        <footer className="border-t border-slate-800 py-6 text-center bg-[#0a0f1e]">
-          <p className="text-slate-500 text-sm">© {new Date().getFullYear()} Path2Intern. All rights reserved.</p>
+        <footer className="border-t border-gray-200 py-6 text-center bg-white">
+          <p className="text-gray-400 text-sm">© {new Date().getFullYear()} Path2Intern. All rights reserved.</p>
         </footer>
       </div>
     );
   }
 
-  if (authLoading) return <div className="min-h-screen bg-[#0a0f1e]" />;
+  if (authLoading) return <div className="min-h-screen bg-gray-50" />;
 
   /* ── Public dark landing page ────────────────────────────────────────── */
   return (
-    <div className="min-h-screen bg-[#0a0f1e] text-white">
+    <div className="min-h-screen bg-gray-50 text-white">
       <PublicNavbar />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}

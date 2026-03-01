@@ -141,7 +141,7 @@ export default function Register() {
             <span className="text-white font-bold text-lg">Path2Intern</span>
           </div>
 
-          <h1 className="text-3xl font-bold text-white mb-1">Create account</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">Create account</h1>
           <p className="text-slate-400 text-sm mb-6">Start your internship journey today</p>
 
           {/* Tab toggle */}

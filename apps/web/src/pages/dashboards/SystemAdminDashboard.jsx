@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 const StatCard = ({ label, value, icon, accent }) => (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-colors">
+    <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-colors">
         <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">{label}</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">{label}</p>
             <span className="text-lg">{icon}</span>
         </div>
         <p className={`text-3xl font-bold ${accent}`}>{value}</p>
@@ -15,15 +15,15 @@ const DarkActionCard = ({ to, icon, title, description, disabled }) => (
     <Link
         to={disabled ? "#" : to}
         onClick={disabled ? (e) => e.preventDefault() : undefined}
-        className={`bg-slate-900 border border-slate-800 rounded-2xl p-5 flex items-start gap-4 transition-all duration-200 ${disabled
+        className={`bg-white border border-gray-200 rounded-2xl p-5 flex items-start gap-4 transition-all duration-200 ${disabled
                 ? "opacity-40 cursor-not-allowed"
-                : "hover:border-blue-500/30 hover:bg-slate-900/80 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-900/10"
+                : "hover:border-blue-300 hover:bg-gray-50 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-900/10"
             }`}
     >
         <div className="text-2xl flex-shrink-0 mt-0.5">{icon}</div>
         <div>
-            <p className="text-sm font-semibold text-white mb-1">{title}</p>
-            <p className="text-xs text-slate-400 leading-relaxed">{description}</p>
+            <p className="text-sm font-semibold text-gray-900 mb-1">{title}</p>
+            <p className="text-xs text-gray-500 leading-relaxed">{description}</p>
         </div>
     </Link>
 );
@@ -32,17 +32,17 @@ export default function SystemAdminDashboard() {
     const { user } = useAuth();
 
     return (
-        <div className="min-h-screen bg-[#0a0f1e]">
+        <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="border-b border-slate-800 px-8 py-8">
+            <div className="border-b border-gray-200 bg-white px-8 py-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex items-center gap-3 mb-1">
                         <span className="bg-red-500/20 text-red-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-red-500/30 uppercase tracking-wider">
                             System Admin
                         </span>
                     </div>
-                    <h1 className="text-3xl font-bold text-white mt-2">Admin Control Center</h1>
-                    <p className="text-slate-400 mt-1 text-sm">
+                    <h1 className="text-3xl font-bold text-gray-900 mt-2">Admin Control Center</h1>
+                    <p className="text-gray-500 mt-1 text-sm">
                         Full platform oversight — users, orgs, roles, and settings.
                     </p>
                 </div>
@@ -58,7 +58,7 @@ export default function SystemAdminDashboard() {
                 </div>
 
                 {/* Action cards */}
-                <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-5">Quick Actions</h2>
+                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-5">Quick Actions</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <DarkActionCard to="#" icon="👤" title="Manage Users" description="View, edit, activate or deactivate all platform users." disabled />
                     <DarkActionCard to="#" icon="🛡️" title="Assign Roles" description="Assign University Admins, Recruiters, and Module Managers." disabled />

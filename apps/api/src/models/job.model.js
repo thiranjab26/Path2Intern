@@ -5,7 +5,11 @@ const jobSchema = new mongoose.Schema(
         title: { type: String, required: true, trim: true },
         description: { type: String, required: true },
         company: { type: String, required: true, trim: true },
-        location: { type: String, required: true, trim: true },
+
+        // Location
+        province: { type: String, default: "" },
+        district: { type: String, default: "" },
+        location: { type: String, required: true, trim: true }, // stored as "District, Province"
 
         workMode: {
             type: String,
@@ -19,10 +23,15 @@ const jobSchema = new mongoose.Schema(
             default: "Internship",
         },
 
-        duration: { type: String, default: "" },     // e.g. "3 months"
-        salary: { type: String, default: "" },        // e.g. "LKR 25,000/month"
-        skills: { type: [String], default: [] },      // ["React", "Node.js"]
-        requirements: { type: String, default: "" },  // free-text
+        duration: { type: String, default: "" },
+        // Salary range
+        salaryMin: { type: Number, default: null },
+        salaryMax: { type: Number, default: null },
+        salaryCurrency: { type: String, default: "LKR" },
+        salaryPeriod: { type: String, default: "month" }, // month / year
+
+        skills: { type: [String], default: [] },
+        requirements: { type: String, default: "" },
 
         deadline: { type: Date, default: null },
 
