@@ -69,28 +69,28 @@ export default function AssignRolePage({ mode = "manager" }) {
         : roleList.filter((r) => r.role === "MODULE_OPERATOR");
 
     return (
-        <div className="min-h-screen bg-[#0a0f1e]">
-            <div className="border-b border-slate-800 px-8 py-8">
+        <div className="min-h-screen bg-gray-50">
+            <div className="border-b border-gray-200 bg-white px-8 py-8">
                 <div className="max-w-5xl mx-auto">
                     <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border uppercase tracking-wider ${accentBadge}`}>{isManagerMode ? "University Admin" : "Module Manager"}</span>
-                    <h1 className="text-3xl font-bold text-white mt-2">{heading}</h1>
-                    <p className="text-slate-400 mt-1 text-sm">{isManagerMode ? "Assign Module Managers to oversee content and operators for each module." : "Add Module Operators who can submit MCQs for your module's question bank."}</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mt-2">{heading}</h1>
+                    <p className="text-gray-500 mt-1 text-sm">{isManagerMode ? "Assign Module Managers to oversee content and operators for each module." : "Add Module Operators who can submit MCQs for your module's question bank."}</p>
                 </div>
             </div>
 
             <div className="max-w-5xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Assignment form */}
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                <div className="bg-white border border-gray-200 rounded-2xl p-6">
                     <h2 className="text-base font-semibold text-white mb-5">Assign a {roleLabel}</h2>
                     <form onSubmit={handleAssign} className="space-y-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">Module</label>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Module</label>
                             <select className={inp} value={selectedModule} onChange={(e) => setSelectedModule(e.target.value)} required>
                                 {ownModules.map((m) => <option key={m.code} value={m.code}>{m.code} — {m.label}</option>)}
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">User Email</label>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">User Email</label>
                             <input type="email" className={inp} placeholder="user@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
                         </div>
                         {assignMessage && (
@@ -107,7 +107,7 @@ export default function AssignRolePage({ mode = "manager" }) {
                 </div>
 
                 {/* Current role holders */}
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                <div className="bg-white border border-gray-200 rounded-2xl p-6">
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="text-base font-semibold text-white">Current {roleLabel}s</h2>
                         <span className="text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 px-2.5 py-1 rounded-full">{filteredRoles.length} assigned</span>

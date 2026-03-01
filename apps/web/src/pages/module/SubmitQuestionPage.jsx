@@ -44,12 +44,12 @@ export default function SubmitQuestionPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0f1e]">
-            <div className="border-b border-slate-800 px-8 py-8">
+        <div className="min-h-screen bg-gray-50">
+            <div className="border-b border-gray-200 bg-white px-8 py-8">
                 <div className="max-w-3xl mx-auto">
                     <span className="bg-purple-500/20 text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-purple-500/30 uppercase tracking-wider">MCQ Submission</span>
-                    <h1 className="text-3xl font-bold text-white mt-2">Submit a Question</h1>
-                    <p className="text-slate-400 mt-1 text-sm">Add a new multiple-choice question to your module's question bank.</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mt-2">Submit a Question</h1>
+                    <p className="text-gray-500 mt-1 text-sm">Add a new multiple-choice question to your module's question bank.</p>
                 </div>
             </div>
 
@@ -70,21 +70,21 @@ export default function SubmitQuestionPage() {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+                <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 space-y-6">
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">Module</label>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Module</label>
                         <select className={inp} value={form.module} onChange={(e) => setForm((f) => ({ ...f, module: e.target.value }))} required>
                             {allowedModules.map((m) => <option key={m.code} value={m.code}>{m.code} — {m.label}</option>)}
                         </select>
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">Question</label>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Question</label>
                         <textarea className={`${inp} resize-none`} rows={4} placeholder="Enter your question here..." value={form.questionText} onChange={(e) => setForm((f) => ({ ...f, questionText: e.target.value }))} required />
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-3 uppercase tracking-wide">Answer Options</label>
+                        <label className="block text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wide">Answer Options</label>
                         <div className="space-y-3">
                             {OPTION_LABELS.map((label, i) => (
                                 <div key={label} className="flex items-center gap-3">
@@ -100,7 +100,7 @@ export default function SubmitQuestionPage() {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">Explanation <span className="font-normal text-slate-600 normal-case">(optional)</span></label>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Explanation <span className="font-normal text-slate-600 normal-case">(optional)</span></label>
                         <textarea className={`${inp} resize-none`} rows={3} placeholder="Explain why the correct answer is right..." value={form.explanation} onChange={(e) => setForm((f) => ({ ...f, explanation: e.target.value }))} />
                     </div>
 

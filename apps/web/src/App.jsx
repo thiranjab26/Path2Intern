@@ -73,7 +73,7 @@ function App() {
           {/* ── Role Dashboards ─────────────────────────────────── */}
           <Route path="/dashboard/system-admin" element={<DashboardRoute allowedRoles={["SYSTEM_ADMIN"]}><SystemAdminDashboard /></DashboardRoute>} />
           <Route path="/dashboard/university-admin" element={<DashboardRoute allowedRoles={["UNIVERSITY_ADMIN"]}><UniversityAdminDashboard /></DashboardRoute>} />
-          <Route path="/dashboard/recruiter" element={<DashboardRoute allowedRoles={["ORGANIZATION"]}><RecruiterDashboard /></DashboardRoute>} />
+          <Route path="/dashboard/recruiter" element={<DashboardRoute allowedRoles={["ORGANIZATION", "RECRUITER"]}><RecruiterDashboard /></DashboardRoute>} />
           <Route path="/dashboard/student" element={<DashboardRoute allowedRoles={["STUDENT"]}><StudentDashboard /></DashboardRoute>} />
           <Route path="/dashboard/module-manager" element={<DashboardRoute allowedRoles={["MODULE_MANAGER"]}><ModuleManagerDashboard /></DashboardRoute>} />
           <Route path="/dashboard/module-operator" element={<DashboardRoute allowedRoles={["MODULE_OPERATOR"]}><ModuleOperatorDashboard /></DashboardRoute>} />
@@ -95,7 +95,7 @@ function App() {
           <Route path="/module/review" element={<DashboardRoute allowedRoles={["MODULE_MANAGER"]}><ReviewQueuePage /></DashboardRoute>} />
           <Route path="/module/question-bank" element={<DashboardRoute allowedRoles={["MODULE_MANAGER", "MODULE_OPERATOR"]}><QuestionBankPage /></DashboardRoute>} />
           <Route path="/quiz" element={<DashboardRoute allowedRoles={["STUDENT"]}><QuizPage /></DashboardRoute>} />
-          <Route path="/org/post-job" element={<DashboardRoute allowedRoles={["ORGANIZATION"]}><PostJobPage /></DashboardRoute>} />
+          <Route path="/org/post-job" element={<DashboardRoute allowedRoles={["ORGANIZATION", "RECRUITER"]}><PostJobPage /></DashboardRoute>} />
           <Route path="/admin/org-approvals" element={<DashboardRoute allowedRoles={["UNIVERSITY_ADMIN", "SYSTEM_ADMIN"]}><OrgApprovalsPage /></DashboardRoute>} />
           <Route path="/admin/contacts" element={<DashboardRoute allowedRoles={["SYSTEM_ADMIN"]}><ContactsPage /></DashboardRoute>} />
         </Routes>

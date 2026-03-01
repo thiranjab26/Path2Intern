@@ -47,13 +47,13 @@ export default function OrgApprovalsPage() {
     const docUrl = (url) => url ? `${import.meta.env.VITE_API_URL || "http://localhost:3000"}${url}` : null;
 
     return (
-        <div className="min-h-screen bg-[#0a0f1e]">
+        <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="border-b border-slate-800 px-8 py-8">
+            <div className="border-b border-gray-200 bg-white px-8 py-8">
                 <div className="max-w-6xl mx-auto">
                     <span className="bg-amber-500/20 text-amber-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-amber-500/30 uppercase tracking-wider">Administration</span>
-                    <h1 className="text-3xl font-bold text-white mt-2">Organisation Approvals</h1>
-                    <p className="text-slate-400 mt-1 text-sm">Review and approve organisation registration requests.</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mt-2">Organisation Approvals</h1>
+                    <p className="text-gray-500 mt-1 text-sm">Review and approve organisation registration requests.</p>
                 </div>
             </div>
 
@@ -81,7 +81,7 @@ export default function OrgApprovalsPage() {
                 {!loading && orgs.length > 0 && (
                     <div className="space-y-4">
                         {orgs.map((org) => (
-                            <div key={org._id} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-colors">
+                            <div key={org._id} className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-colors">
                                 <div className="flex items-start gap-4 flex-wrap">
                                     <div className="w-12 h-12 rounded-xl bg-green-500/20 text-green-400 font-bold text-lg flex items-center justify-center flex-shrink-0 border border-green-500/20">
                                         {(org.organizationName || org.name)?.[0]?.toUpperCase() || "O"}

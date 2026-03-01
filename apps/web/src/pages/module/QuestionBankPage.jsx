@@ -50,12 +50,12 @@ function EditModal({ question, onClose, onSave }) {
                 <div className="px-6 py-5 space-y-4">
                     {err && <div className="bg-red-500/10 text-red-400 border border-red-500/20 text-sm rounded-xl px-3 py-2">{err}</div>}
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1.5">Question</label>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Question</label>
                         <textarea rows={3} value={form.questionText} onChange={(e) => setForm((f) => ({ ...f, questionText: e.target.value }))} className={inp} />
                     </div>
                     {form.options.map((opt) => (
                         <div key={opt.label}>
-                            <label className="block text-xs font-semibold text-slate-400 mb-1.5">
+                            <label className="block text-xs font-semibold text-gray-600 mb-1.5">
                                 Option {opt.label} {opt.label === form.correctOption && <span className="ml-2 text-green-400">✓ Correct</span>}
                             </label>
                             <div className="flex gap-2">
@@ -68,7 +68,7 @@ function EditModal({ question, onClose, onSave }) {
                         </div>
                     ))}
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1.5">Explanation (optional)</label>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Explanation (optional)</label>
                         <textarea rows={2} value={form.explanation} onChange={(e) => setForm((f) => ({ ...f, explanation: e.target.value }))} className={inp} />
                     </div>
                 </div>
@@ -119,12 +119,12 @@ export default function QuestionBankPage() {
     const allModCodes = isManager ? myModules : [...new Set([...myModules, ...questions.map((q) => q.module)])];
 
     return (
-        <div className="min-h-screen bg-[#0a0f1e]">
-            <div className="border-b border-slate-800 px-8 py-8">
+        <div className="min-h-screen bg-gray-50">
+            <div className="border-b border-gray-200 bg-white px-8 py-8">
                 <div className="max-w-6xl mx-auto">
                     <span className="bg-purple-500/20 text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-purple-500/30 uppercase tracking-wider">{isManager ? "Module Manager" : "Module Operator"}</span>
-                    <h1 className="text-3xl font-bold text-white mt-2">Question Bank</h1>
-                    <p className="text-slate-400 mt-1 text-sm">{isManager ? "Manage all questions for your modules — edit, delete and review." : "View and manage your question submissions."}</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mt-2">Question Bank</h1>
+                    <p className="text-gray-500 mt-1 text-sm">{isManager ? "Manage all questions for your modules — edit, delete and review." : "View and manage your question submissions."}</p>
                 </div>
             </div>
 
@@ -164,7 +164,7 @@ export default function QuestionBankPage() {
                 {!loading && filtered.length > 0 && (
                     <div className="space-y-3">
                         {filtered.map((q, idx) => (
-                            <div key={q._id} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-colors">
+                            <div key={q._id} className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-colors">
                                 <div className="flex items-start gap-4">
                                     <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-slate-800 text-slate-400 text-xs font-bold flex items-center justify-center mt-0.5 border border-slate-700">{idx + 1}</span>
                                     <div className="flex-1 min-w-0">

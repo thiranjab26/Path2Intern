@@ -52,13 +52,13 @@ export default function ContactsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0f172a]">
+        <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="border-b border-slate-800 px-8 py-8">
+            <div className="border-b border-gray-200 bg-white px-8 py-8">
                 <div className="max-w-5xl mx-auto">
                     <span className="bg-blue-500/20 text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider border border-blue-500/30">System Admin</span>
-                    <h1 className="text-3xl font-bold text-white mt-2">Contact Messages</h1>
-                    <p className="text-slate-400 mt-1 text-sm">View and reply to messages from the contact form. Replies are sent via email.</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mt-2">Contact Messages</h1>
+                    <p className="text-gray-500 mt-1 text-sm">View and reply to messages from the contact form. Replies are sent via email.</p>
                 </div>
             </div>
 
@@ -75,7 +75,7 @@ export default function ContactsPage() {
 
                 <div className="space-y-4">
                     {contacts.map((c) => (
-                        <div key={c._id} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-colors">
+                        <div key={c._id} className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-colors">
                             <div className="flex items-start justify-between gap-4 flex-wrap">
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-1 flex-wrap">
